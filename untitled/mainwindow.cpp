@@ -110,14 +110,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void ParseString(std::string &cardName){
+    cardName[0] = toupper(cardName[0]);
     for(unsigned int i = 0; i < cardName.length(); i++){
         if(cardName[i] == ' '){
             cardName[i] = '_';
+            cardName[i+1] = toupper(cardName[i+1]);
         }
 
 
     }
-}
 
 std::string getHTML(std::string cardName){
     CURLcode data;
