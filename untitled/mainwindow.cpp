@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     getData = new QNetworkAccessManager(this);
     connect(button,SIGNAL (clicked()),this,SLOT (card()));
-    connect(getData, SIGNAL (finished(QNetworkReply * )),this,SLOT (ImgBytes(QNetworkReply *)));
+    connect(getData, SIGNAL (finished(QNetworkReply * )),this,SLOT (ImgData(QNetworkReply *)));
 
     ShowImg = new QPixmap(500,500);
     Pixmap = new QLabel("",this);
@@ -169,7 +169,9 @@ void MainWindow::card(){
     ParseString(cardName);
     std::string HTML = getHTML(cardName);
     HTMLParse Parser(HTML);
-    
+    std::string k;
+    int b = 0;
+    int z = 0;
     if(Parser.parseHTML()){
         for(size_t br = Res.find(':'); br != std::string::npos; br = Res.find(':',br) ){
             Res.replace(br,1,"<br>");

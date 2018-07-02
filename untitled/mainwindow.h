@@ -1,6 +1,5 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
 #include <QPushButton>
 #include <QTextBlock>
@@ -10,6 +9,7 @@
 #include <QtNetwork>
 #include <QUrl>
 #include <QPixmap>
+#include <QStyle>
 namespace Ui {
 class MainWindow;
 }
@@ -34,7 +34,7 @@ private:
     QPixmap * ShowImg;
 signals:
 
-public slots:
+private slots:
 
     void card();
     void ImgData(QNetworkReply * reply);
