@@ -98,12 +98,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-
+   
     search = new QLineEdit(this);
-    search->setGeometry(QRect(res.first*.22,50,150,25));
+    search->setGeometry(QRect(609,10,121,30));
+    search->setStyleSheet("QLineEdit {background-color:#196D8D;color: #59B6DA;border:2px;border-color: #0A3E53;border-radius: 5px; }");
     button = new QPushButton("Search",this);
-    button->setGeometry(QRect(res.first*.3,50,75,25));
-
+    button->setGeometry(QRect(740,10,90,30));
+    button->setStyleSheet("QPushButton { background-color:#196D8D;color: #59B6DA;border:2px;border-color: #0A3E53;border-radius: 5px;}");
     getData = new QNetworkAccessManager(this);
     connect(button,SIGNAL (clicked()),this,SLOT (card()));
     connect(getData, SIGNAL (finished(QNetworkReply * )),this,SLOT (ImgData(QNetworkReply *)));
