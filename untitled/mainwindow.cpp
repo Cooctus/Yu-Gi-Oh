@@ -169,9 +169,7 @@ void MainWindow::card(){
     ParseString(cardName);
     std::string HTML = getHTML(cardName);
     HTMLParse Parser(HTML);
-    std::string k;
-    int b = 0;
-    int z = 0;
+    
     if(Parser.parseHTML()){
         for(size_t br = Res.find(':'); br != std::string::npos; br = Res.find(':',br) ){
             Res.replace(br,1,"<br>");
