@@ -31,8 +31,8 @@ public:
     HTMLParse(std::string html){
         HTML = html;
     }
-    bool parseHTML(){
-        boost::regex regex("<tr><td><\/td><\/tr>.*<tr><td.* style.* left;.*>(.*)<\/td><\/tr><\/table>");
+        bool parseHTML(){
+        boost::regex regex("<tr><td><\/td><\/tr>.*<tr><td.* style.* left;.*>(.*)<\/td>");
         boost::smatch match;
         if(boost::regex_search(HTML,match,regex)){
             Res = match[0];
@@ -40,14 +40,27 @@ public:
         else{
             return false;
         }
-       size_t pos = Res.find('.');
+       size_t pos = Res.find(".<");
        Res = Res.substr(0,pos);
 
-    return true;
-    }
-   void getImage(){
 
-        boost::regex regex("^<\/tr><tr><td.*>(<a.*><img.*\s*src=.*\/yugioh\/.*\s*alt=.*\s*class=.*><\/a>)");
+       for(int i = 0; i < Res.length(); i++){
+           if(Res[i] == '<'){
+
+           Res.erase(i, Res.substr(i,Res.length()).find('>')+1);
+
+               }
+
+       }
+
+       Res = Res.substr(87,Res.length());
+
+       return true;
+    }
+
+   bool getImage(){
+
+        boost::regex regex("^<\/tr><tr><td.*>(<a.*><img.*\s*src=.*\/yugioh\/.*\s*alt=.*\s*class=.*>)");
         boost::smatch match;
 
         if(boost::regex_search(HTML,match,regex)){
@@ -55,13 +68,17 @@ public:
         }
 
         else{
+      return false;
         }
 
         size_t pos1 = img.find("src=\"");
 
         size_t pos2 = img.substr(pos1,img.length()).find(" ");
+
         img = img.substr(pos1,pos2);
         img =  img.substr(5,img.length()-6);
+
+        return true;
    }
 
 };
@@ -90,13 +107,11 @@ MainWindow::MainWindow(QWidget *parent) :
     getData = new QNetworkAccessManager(this);
     connect(button,SIGNAL (clicked()),this,SLOT (card()));
     connect(getData, SIGNAL (finished(QNetworkReply * )),this,SLOT (ImgBytes(QNetworkReply *)));
-    std::cout << img;
 
     ShowImg = new QPixmap(500,500);
     Pixmap = new QLabel("",this);
     Pixmap->setGeometry(QRect(res.first/25,res.second/17,500,500));
     Description = new QLabel("",this);
-    Description->wordWrap();
     Description->setGeometry(QRect(res.first/5,res.second/12,1000,600));
     setFixedSize(res.first/2,res.second/2);
 
@@ -110,15 +125,24 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void ParseString(std::string &cardName){
-    cardName[0] = toupper(cardName[0]);
+
     for(unsigned int i = 0; i < cardName.length(); i++){
         if(cardName[i] == ' '){
             cardName[i] = '_';
             cardName[i+1] = toupper(cardName[i+1]);
+            i++;
+        }
+        else{
+            cardName[i] = tolower(cardName[i]);
         }
 
 
-    }
+
+}
+cardName[0] = toupper(cardName[0]);
+std::cout << cardName;
+
+}
 
 std::string getHTML(std::string cardName){
     CURLcode data;
@@ -145,22 +169,29 @@ void MainWindow::card(){
     ParseString(cardName);
     std::string HTML = getHTML(cardName);
     HTMLParse Parser(HTML);
+    std::string k;
+    int b = 0;
+    int z = 0;
     if(Parser.parseHTML()){
-        int spaceCount = 0;
+        for(size_t br = Res.find(':'); br != std::string::npos; br = Res.find(':',br) ){
+            Res.replace(br,1,"<br>");
+        }
+        Description->setStyleSheet("font-size : 8px");
+        Description->setText(Res.c_str());
 
-        std::cout << Res;
-        Res = "Card Text: " + Res;
-        Description->setText( Res.c_str());
         Parser.getImage();
         QUrl url = QUrl(img.c_str());
+
         QNetworkRequest request(url);
         getData->get(request);
         connect(getData, SIGNAL (finished(QNetworkReply * )),this,SLOT (ImgData(QNetworkReply *)));
     }
+
+
     else{
         Description->setText("Sorry Card not found");
         Pixmap->clear();
-        return;
+
     }
 
 
@@ -170,10 +201,11 @@ void MainWindow::card(){
 
 void MainWindow::ImgData(QNetworkReply * reply){
 image = reply->readAll();
-if(ShowImg->loadFromData(image,"PNG"))
+if(ShowImg->loadFromData(image,"PNG") || ShowImg->loadFromData(image,"JPG"))
 {
     Pixmap->setPixmap(*ShowImg);
 
 }
+
 
 }
