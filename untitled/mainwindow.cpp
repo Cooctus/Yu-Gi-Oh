@@ -7,7 +7,6 @@
 #include <X11/Xlib.h>
 #include <curl/curl.h>
 #include "boost/regex.hpp"
-#include <regex>
 std::string img;
 std::string Res;
 std::string parse;
@@ -177,7 +176,10 @@ void MainWindow::card(){
         for(size_t br = Res.find(':'); br != std::string::npos; br = Res.find(':',br) ){
             Res.replace(br,1,"<br>");
         }
-        Description->setStyleSheet("font-size : 8px");
+         for(size_t i = Res.find(','); i != std::string::npos; i = Res.find(',',i) ){
+            Res.replace(i,1,"<br>");
+        }
+        Description->setStyleSheet("font-size : 16px");
         Description->setText(Res.c_str());
 
         Parser.getImage();
