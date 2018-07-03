@@ -6,6 +6,7 @@
 #include "ui_mainwindow.h"
 #include <X11/Xlib.h>
 #include <curl/curl.h>
+#include <QDebug>
 #include "boost/regex.hpp"
 std::string img;
 std::string Res;
@@ -92,12 +93,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ShowImg = new QPixmap(500,500);
-
     ui->setupUi(this);
 
-
-
-   
     search = new QLineEdit(this);
     search->setGeometry(QRect(609,10,121,30));
     search->setStyleSheet("QLineEdit {background-color:#196D8D;color: #59B6DA;border:2px;border-color: #0A3E53;border-radius: 5px; }");
@@ -106,8 +103,8 @@ MainWindow::MainWindow(QWidget *parent) :
     button->setStyleSheet("QPushButton { background-color:#196D8D;color: #59B6DA;border:2px;border-color: #0A3E53;border-radius: 5px;}");
     getData = new QNetworkAccessManager(this);
     connect(button,SIGNAL (clicked()),this,SLOT (card()));
-    connect(getData, SIGNAL (finished(QNetworkReply * )),this,SLOT (ImgData(QNetworkReply *)));
 
+    connect(getData, SIGNAL (finished(QNetworkReply * )),this,SLOT (ImgData(QNetworkReply *)));
     ShowImg = new QPixmap(500,500);
     Pixmap = new QLabel("",this);
     Pixmap->setGeometry(QRect(res.first/25,res.second/17,500,500));
@@ -170,8 +167,7 @@ void MainWindow::card(){
     std::string HTML = getHTML(cardName);
     HTMLParse Parser(HTML);
     std::string k;
-    int b = 0;
-    int z = 0;
+
     if(Parser.parseHTML()){
         for(size_t br = Res.find(':'); br != std::string::npos; br = Res.find(':',br) ){
             Res.replace(br,1,"<br>");
@@ -179,9 +175,12 @@ void MainWindow::card(){
          for(size_t i = Res.find(','); i != std::string::npos; i = Res.find(',',i) ){
             Res.replace(i,1,"<br>");
         }
-        Description->setStyleSheet("font-size : 16px");
+        QFont font("Wingdings",12);
+        Description->setStyleSheet("color: #0b3b89");
+        Description->setFont(font);
         Description->setText(Res.c_str());
-
+        std::cout << Description->fontInfo().family().toStdString();
+        std::cout << search->fontInfo().family().toStdString();
         Parser.getImage();
         QUrl url = QUrl(img.c_str());
 
@@ -201,7 +200,11 @@ void MainWindow::card(){
 
 
 }
-
+void MainWindow::keyPressEvent(QKeyEvent *enter){
+    if((enter->key() == Qt::Key_Enter || enter->key() == Qt::Key_Return) && search->text().toStdString().size() > 1){
+       card();
+    }
+}
 void MainWindow::ImgData(QNetworkReply * reply){
 image = reply->readAll();
 if(ShowImg->loadFromData(image,"PNG") || ShowImg->loadFromData(image,"JPG"))

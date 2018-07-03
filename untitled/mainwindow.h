@@ -9,6 +9,7 @@
 #include <QtNetwork>
 #include <QUrl>
 #include <QPixmap>
+#include <QKeyEvent>
 #include <QStyle>
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,8 @@ private:
     QNetworkAccessManager * getData;
     QByteArray image;
     QPixmap * ShowImg;
+    void keyPressEvent(QKeyEvent *enter);
+
 signals:
 
 private slots:
