@@ -175,7 +175,7 @@ void MainWindow::card(){
          for(size_t i = Res.find(','); i != std::string::npos; i = Res.find(',',i) ){
             Res.replace(i,1,"<br>");
         }
-        QFont font("Wingdings",12);
+        //QFont font("Wingdings",12); l m a o
         Description->setStyleSheet("color: #0b3b89");
         Description->setFont(font);
         Description->setText(Res.c_str());
